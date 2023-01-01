@@ -1,0 +1,62 @@
+network:
+  - dim: 512
+    aggr: 'concat'
+    loss: 'softmax'
+    arch: '1-1'
+    act: 'relu'
+    bias: 'norm'
+params:
+  - lr: 0.01
+    dropout: 0.3
+    weight_decay: 0.0
+    sample_coverage: 1000
+phase:
+  - end: 200
+    sampler: 'rw'
+    num_root: 4000
+    depth: 10
+prune:
+  - budget:
+      - 1
+      - 1
+      - 1
+    dynamic: 'manual'
+    manual_neigh: 1 # manually input neighbor budget for last layer
+    manual_self: 1 # manually input self budget for last layer
+    total_step: 1
+    beta_clip: false
+    beta_batch: 1024
+    beta_lr: 0.05
+    beta_epoch: 20
+    beta_lmbd_1: # in reverse order for each layer (including the classifier)
+      - 0 # classifier
+      - 0 # gcn-layer-2
+      - 0 # gcn-layer-1
+    beta_lmbd_1_step:
+      - 0.0001
+      - 0.0005
+      - 0.002
+    beta_lmbd_2:
+      - 0
+      - 0
+      - 0
+    beta_lmbd_2_step: 
+      - 0
+      - 0
+      - 0
+    weight_batch: 1024
+    weight_lr: 0.1
+    weight_epoch: 20
+retrain_phase:
+  - end: 1
+    sampler: 'rw'
+    num_root: 4000
+    depth: 10
+batch_inference:
+  - batch_size: 512
+    neighbors: 32 # number of neighbors except for last layer
+    approx: True
+
+
+# 0.7908/29.1842
+# 0.7916/23.9025
